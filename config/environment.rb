@@ -1,12 +1,11 @@
-ENV['SINATRA_ENV'] ||= "ski"
+@environment = ENV['SINATRA_ENV'] ||= "development"
 
 require 'bundler/setup'
-Bundler.require(:default, ENV['SINATRA_ENV'])
+Bundler.require(:default, @environment)
 
-ActiveRecord::Base.establish_connection(
-  :adapter => "sqlite3",
-  :database => "db/#{ENV['SINATRA_ENV']}.sqlite"
-)
+@dbconfig = YAML.load(File.read('config/database.yml'))
+
+ActiveRecord::Base.establish_connection(@dbconfig[@environment])
 
 require './app/controllers/application_controller'
 require_all 'app'
